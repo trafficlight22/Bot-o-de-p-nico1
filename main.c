@@ -3,29 +3,27 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-// =================== DEFINIÇÕES ===================
 #define BUTTON_GPIO 4
 #define BUZZER      GPIO_NUM_23
 #define LED         5
 
-#define ponto 200      // tempo do ponto em ms
-#define linha 900      // tempo da linha em ms
+#define ponto 200      
+#define linha 900      
 
 #define DEBOUNCE_TIME_MS 50
 #define HOLD_TIME_MS     6000  // 6 segundos
 
 int ativado = 0;
 
-// =================== FUNÇÕES ===================
 
-// Liga e desliga sirene
+// Liga e desliga sirene-fernando
 void tocarSirene() { gpio_set_level(BUZZER, 1); }
 void pararSirene() { gpio_set_level(BUZZER, 0); }
 
-// Mensagem de ativação
+// Mensagem de ativação-eloa
 void enviarMensagem() { printf("SOS ATIVADO\n"); }
 
-// Pisca o LED em Morse
+// Pisca o LED em Morse-Pedro
 void morse(int tempo, int vezes, int entrada) {
     gpio_set_direction(entrada, GPIO_MODE_OUTPUT);
     for(int i = 0; i < vezes; i++) {
@@ -52,7 +50,7 @@ void app_main(void) {
 
     printf("Sistema iniciado\n");
 
-    //botão 
+    //botão-eloa
     gpio_config_t io_conf = {
         .pin_bit_mask = (1ULL << BUTTON_GPIO),
         .mode = GPIO_MODE_INPUT,
@@ -60,17 +58,17 @@ void app_main(void) {
     };
     gpio_config(&io_conf);
 
-    // Configura LED e buzzer
+    // Configura LED-henrique e buzzer-fernando
     gpio_set_direction(LED, GPIO_MODE_OUTPUT);
     gpio_set_direction(BUZZER, GPIO_MODE_OUTPUT);
 
     while (1) {
-        // ===== Verifica botão para ativação =====
+        //Verifica botão para ativação-eloa
         if (gpio_get_level(BUTTON_GPIO) == 0 && !ativado) {
             vTaskDelay(pdMS_TO_TICKS(DEBOUNCE_TIME_MS));
             if (gpio_get_level(BUTTON_GPIO) == 0) {
                 int tempo = 0;
-                // Espera segurar botão
+                //Espera segurar
                 while (gpio_get_level(BUTTON_GPIO) == 0) {
                     vTaskDelay(pdMS_TO_TICKS(10));
                     tempo += 10;
@@ -78,14 +76,14 @@ void app_main(void) {
                         ativado = 1;
                         gpio_set_level(LED, 1);   // acende LED
                         tocarSirene();
-                        enviarMensagem();         // só aparece uma vez
+                        enviarMensagem();         
                         break;
                     }
                 }
             }
         }
 
-        // ===== SOS em Morse enquanto ativado =====
+        //  SOS em Morse enquanto ativado- Pedro 
         if (ativado) {
             s();
             o();
